@@ -67,8 +67,22 @@
         line: '127.0.0.1 web1.local web2.local'
         insertbefore: BOF
         
-    - name: Curl web1
-      shell: 'curl web1.local'
-      
-    - name: Curl web2
-      shell: 'curl web2.local'
+    - name: Test container web1
+      uri:
+        url: http://web1.local
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: result
+      debug:
+        var: result.content
+        
+    - name: Test container web2
+      uri:
+        url: http://web2.local
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: result
+      debug:
+        var: result.content
