@@ -1,0 +1,62 @@
+---
+- hosts: webserver
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  connection: local
+  gather_facts: false
+  
+  tasks:
+    - name: Create a network
+      docker_network:
+        name: network_one
+        
+    - name: Run web1 httpd container
+      docker_container:
+        name: web1
+        image: httpd
+        state: started
+        detach: yes
+        hostname: web2.local
+        domainname: local
+        expose:
+          - "80"
+        volumes:
+          - /vagrant/devops/index1.html:/usr/local/apache2/htdocs/index.html
+          
+    - name: Run web2 httpd container
+      docker_container:
+        name: web2
+        image: httpd
+        state: started
+        detach: yes
+        hostname: web2.local
+        domainname: local
+        expose:
+          - "80"
+        volumes:
+          - /vagrant/devops/index2.html:/usr/local/apache2/htdocs/index.html
+          
+    - name: Run nginx container
+      docker_container:
+        name: proxy
+        image: nginx
+        state: started
+        detach: yes
+        hostname: proxy.local
+        domainname: local
+        ports:
+          - 80:80
+        volumes:
+          - /vagrant/devops/nginx.conf:/etc/nginx/nginx.conf
+        links:
+          - web1
+          - web2
+          
+    - name: Remove all but selected list of containers
+      docker_network:
+        name: network_one
+        connected:
+          - web1
+          - web2
+          - proxy
