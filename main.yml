@@ -22,7 +22,7 @@
         expose:
           - "80"
         volumes:
-          - /vagrant/devops/index1.html:/usr/local/apache2/htdocs/index.html
+          - ./index1.html:/usr/local/apache2/htdocs/index.html
           
     - name: Run web2 httpd container
       docker_container:
@@ -35,7 +35,7 @@
         expose:
           - "80"
         volumes:
-          - /vagrant/devops/index2.html:/usr/local/apache2/htdocs/index.html
+          - ./index2.html:/usr/local/apache2/htdocs/index.html
           
     - name: Run nginx container
       docker_container:
@@ -48,7 +48,7 @@
         ports:
           - 80:80
         volumes:
-          - /vagrant/devops/nginx.conf:/etc/nginx/nginx.conf
+          - ./nginx.conf:/etc/nginx/nginx.conf
         links:
           - web1
           - web2
@@ -60,3 +60,15 @@
           - web1
           - web2
           - proxy
+          
+    - name: Add the container domain names to hosts
+      lineinfile:
+        path: /etc/hosts
+        line: '127.0.0.1 web1.local web2.local'
+        insertbefore: BOF
+        
+    - name: Curl web1
+      shell: 'curl web1.local'
+      
+    - name: Curl web2
+      shell: 'curl web2.local'
