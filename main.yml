@@ -1,6 +1,7 @@
 ---
 - hosts: local
   become: yes
+  become_user: vagrant
   become_method: sudo
   connection: local
   gather_facts: false
