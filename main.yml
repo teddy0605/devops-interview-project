@@ -1,6 +1,5 @@
 ---
-- hosts: webserver
-  remote_user: vagrant
+- hosts: local
   become: yes
   become_method: sudo
   connection: local

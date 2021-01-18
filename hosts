@@ -1,5 +1,5 @@
-[webserver]
+[local]
 localhost
 
-[webserver:vars]
+[local:vars]
 ansible_python_interpreter=/usr/bin/python2
