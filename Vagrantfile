@@ -1,37 +1,31 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
- 
 Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"
+  config.vm.box_version = "20230607.0.0"
 
-  config.vm.box = "luisico/centos-7.5-docker"
-  config.vm.box_version = "18.06.0"
-  config.vm.hostname = "test"
-  config.vm.box_check_update = false
-  config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 8888, host: 8888
+  config.vm.network "private_network", ip: "192.168.56.10"
 
-    config.vm.provider "virtualbox" do |v|
-      v.check_guest_additions = false
-      v.memory = 2048
-      v.cpus = 2
-      v.customize ["modifyvm", :id, "--vram", "16"]
-    end
+  ENV['VAGRANT_LOG'] = 'info'
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
 
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum update
-    sudo yum install -y wget
-    sudo yum install -y epel-release
-    sudo yum install -y ansible
-    sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
-    sudo rpm --import http://pkg.jenkins.io/redhat/jenkins.io.key
-    sudo yum install -y java-1.8.0-openjdk-devel
-    sudo yum install -y jenkins
-    sudo systemctl start jenkins
-    sudo chkconfig jenkins on
-    sudo systemctl stop firewalld
-    sudo echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    apt-get update
+    apt-get install -y docker.io docker-compose
+    systemctl enable docker
+    systemctl start docker
+
+    if ! getent group docker | grep -q vagrant; then
+      usermod -aG docker vagrant
+    fi
+    
+    chmod 666 /var/run/docker.sock
   SHELL
 
-
-  config.ssh.insert_key = false
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "main.yml"
+    #ansible.verbose = "vv"
+  end
 end
