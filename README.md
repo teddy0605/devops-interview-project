@@ -28,7 +28,7 @@ The setup consists of:
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/devops-interview-project.git
+   git clone https://github.com/teddy0605/devops-interview-project.git
    cd devops-interview-project
    ```
 
@@ -40,13 +40,18 @@ The setup consists of:
 
 ## Usage
 
-After the installation is complete, you can access the web servers at:
-- http://192.168.56.10/web1/
-- http://192.168.56.10/web2/
+After the installation is complete, you can access the web servers in two ways:
+
+1. Direct access to specific backends:
+   - http://192.168.56.10/web1/
+   - http://192.168.56.10/web2/
+
+2. Random load balancing:
+   - http://192.168.56.10/
+   
+   Accessing the IP address directly will randomly forward your request to either web1 or web2 backend.
 
 Replace `192.168.56.10` with the IP address specified in your Vagrantfile if you've modified it.
-
-Accessing just the vagrant box ip address will forward you request randomly to either web1 or web2 backends.
 
 ## Testing
 
